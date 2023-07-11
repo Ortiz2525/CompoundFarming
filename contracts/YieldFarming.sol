@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "@uniswap/v2-core/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol";
+import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 interface ICompound {
     function supply(address asset, uint256 amount) external returns (uint256);
@@ -14,10 +14,6 @@ interface ICompound {
     function repayBorrow(address asset, uint256 amount) external returns (uint256);
 }
 
-interface IUniswap {
-    function swapExactTokensForTokens(uint256 amountIn, uint256 amountOutMin, address[] calldata path, address to, uint256 deadline) external returns (uint256[] memory);
-    function addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline) external returns (uint256, uint256, uint256);
-}
 
 interface IExternalStore {
     function wrap(address user, uint256 amount, uint256 id) external;
@@ -27,14 +23,14 @@ interface IExternalStore {
 
 contract YieldFarming is ERC1155Holder, Ownable {
     ICompound public compound;
-    IUniswap public uniswap;
+    IUniswapV2Router02 public uniswap;
     IExternalStore public externalStore;
 
     uint256 public constant DAI_WETH_POOL_ID = 1;
 
     constructor(address _compound, address _uniswap, address _externalStore) {
         compound = ICompound(_compound);
-        uniswap = IUniswap(_uniswap);
+        uniswap = IUniswapV2Router02(_uniswap);
         externalStore = IExternalStore(_externalStore);
     }
 
