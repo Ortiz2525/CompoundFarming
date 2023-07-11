@@ -1,0 +1,38 @@
+{
+  "name": "nft-marketplace-auction",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HugoBrunet13/NFT-Marketplace-Auction.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HugoBrunet13/NFT-Marketplace-Auction/issues"
+  },
+  "homepage": "https://github.com/HugoBrunet13/NFT-Marketplace-Auction#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@openzeppelin/contracts": "^4.8.3",
+    "dotenv": "^16.0.3",
+    "hardhat": "^2.14.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^0.6.1",
+    "@compound-finance/compound-js": "^0.6.1",
+    "@uniswap/sdk": "^3.0.3",
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "compound": "^1.2.4",
+    "uniswap": "^0.0.1",
+    "uniswap-sdk": "^3.0.2"
+  }
+}
