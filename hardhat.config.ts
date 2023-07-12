@@ -20,7 +20,10 @@ const config: HardhatUserConfig = {
   solidity: "0.8.18",
   networks: {
     hardhat: {
-      allowUnlimitedContractSize: true
+        forking: {
+          url: "https://mainnet.infura.io/v3/9302aa8d88b44d37a7b45271ecaaeb25",
+        },
+     // allowUnlimitedContractSize: true
     },
     localhost: {
       allowUnlimitedContractSize: true
@@ -30,10 +33,6 @@ const config: HardhatUserConfig = {
       accounts: [PRIVATE_KEY]
     }
     
-    // sepolia: {
-    //   url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`, 
-    //   accounts: [PRIVATE_KEY]
-    // }
   },
     etherscan: {
       apiKey: ETHERSCAN_API_KEY,

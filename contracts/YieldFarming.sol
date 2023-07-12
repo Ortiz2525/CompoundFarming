@@ -7,12 +7,8 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "./interface/CompoundInterface.sol";
 
-interface ICompound {
-    function supply(address asset, uint256 amount) external returns (uint256);
-    function borrow(address asset, uint256 amount) external returns (uint256);
-    function repayBorrow(address asset, uint256 amount) external returns (uint256);
-}
 
 
 interface IExternalStore {
@@ -40,11 +36,11 @@ contract YieldFarming is ERC1155Holder, Ownable {
 
         // Supply asset to Compound
         IERC20(asset).approve(address(compound), assetAmount);
-        compound.supply(asset, assetAmount);
+        compound.supply(asset, borrowAsset, assetAmount);
 
         // Borrow asset from Compound
         IERC20(borrowAsset).approve(address(compound), borrowAmount);
-        compound.borrow(borrowAsset, borrowAmount);
+        compound.borrow(asset, borrowAsset, borrowAmount);
 
         // Swap half of borrowed asset to WETH
         uint256[] memory swapAmounts = new uint256[](path.length);
@@ -93,11 +89,11 @@ contract YieldFarming is ERC1155Holder, Ownable {
 
         // Repay asset debt to Compound
         IERC20(asset).approve(address(compound), borrowAmount);
-        compound.repayBorrow(asset, borrowAmount);
+        compound.repayBorrow(asset, borrowAsset, borrowAmount);
 
         // Redeem asset from Compound
         IERC20(asset).approve(address(compound), assetAmount);
-        compound.repayBorrow(asset, assetAmount);
+        compound.repayBorrow(asset, borrowAsset, assetAmount);
     }
     function getTokenId(address token) private pure returns (uint256) {
         if (token == address(0x6B175474E89094C44Da98b954EedeAC495271d0F)) { //DAI
