@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "./interface/CompoundInterface.sol";
+import "hardhat/console.sol";
 
 
 
@@ -36,11 +37,12 @@ contract YieldFarming is ERC1155Holder, Ownable {
 
         // Supply asset to Compound
         IERC20(asset).approve(address(compound), assetAmount);
-        compound.supply(asset, borrowAsset, assetAmount);
+        compound.supply(asset, getCtokenAddress(asset), assetAmount);
+        //console.log("balance",compound.getCTokenbalance(getCtokenAddress(asset)));
 
         // Borrow asset from Compound
-        IERC20(borrowAsset).approve(address(compound), borrowAmount);
-        compound.borrow(asset, borrowAsset, borrowAmount);
+        //IERC20(borrowAsset).approve(address(compound), borrowAmount);
+        compound.borrow( getCtokenAddress(asset),  getCtokenAddress(borrowAsset), borrowAmount);
 
         // Swap half of borrowed asset to WETH
         uint256[] memory swapAmounts = new uint256[](path.length);
@@ -147,7 +149,18 @@ contract YieldFarming is ERC1155Holder, Ownable {
         } else if (asset == address(0xdAC17F958D2ee523a2206206994597C13D831ec7)) {
             return 0x3E7d1eAB13ad0104d2750B8863b489D65364e32D;
         } else if (asset == address(0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984)) {
-            return 0x17756515f112429471F86f98D5052aCB6C47f6ee;
+            return 0x553303d460EE0afB37EdFf9bE42922D8FF63220e;
+        } else {
+            revert("Unsupported asset address");
+        }
+    }
+    function getCtokenAddress(address asset) private pure returns (address) {
+        if (asset == address(0x6B175474E89094C44Da98b954EedeAC495271d0F)) {
+            return 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643;
+        } else if (asset == address(0xdAC17F958D2ee523a2206206994597C13D831ec7)) {
+            return 0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9;
+        } else if (asset == address(0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984)) {
+            return 0x35A18000230DA775CAc24873d00Ff85BccdeD550;
         } else {
             revert("Unsupported asset address");
         }

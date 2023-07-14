@@ -24,6 +24,8 @@
 
     function repayBorrow(uint) external returns (uint);
 
+    function totalSupply() external returns (uint);
+
     function liquidateBorrow(
       address borrower,
       uint amount,

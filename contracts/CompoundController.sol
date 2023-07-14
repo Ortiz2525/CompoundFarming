@@ -13,18 +13,38 @@ import "hardhat/console.sol";
 //repay
 
 contract CompoundController is ICompound{
+    //Borrow and Repay
+    //Mainnet Comptroller address
+    Comptroller public comptroller =
+        Comptroller(0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B);
+    //chainlink contract mainnet address
+    PriceFeed public priceFeed =
+        PriceFeed(0x922018674c12a7F0D394ebEEf9B58F186CdE13c1);
+
     //Supply token into the Pool
     function supply(address token, address cToken, uint256 _amount) external {
+        console.log("---supply---");
         IERC20(token).transferFrom(msg.sender, address(this), _amount);
         IERC20(token).approve(address(cToken), _amount);
+        console.log("ctoken Balance of this Address  before mint: ", CErc20(cToken).balanceOf(address(this)));
+        console.log("token Balance of this Address before mint",IERC20(token).balanceOf(address(this)));
+        console.log("totalSupply of cToken  before mint",CErc20(cToken).totalSupply());
+        console.log("token Balance of CToken contract before mint",IERC20(token).balanceOf(cToken));
         //If a number is equals zero that means token is minted
         require(CErc20(cToken).mint(_amount) == 0, "mint failed");
+        console.log("-minted-");
+         console.log("ctoken Balance of this Address after mint: ", CErc20(cToken).balanceOf(address(this)));
+         console.log("token Balance of this Address after mint",IERC20(token).balanceOf(address(this)));
+         console.log("totalSupply of cToken after mint",CErc20(cToken).totalSupply());
+         console.log("token Balance of CToken contract after mint",IERC20(token).balanceOf(cToken));
+        // console.log("Price of cToken underlying",getPriceFeed(address(cToken)));
     }
 
 
     //Enter the market Borrow
     //Before borrowing first supply the token so that you can get ctoken to exchange
     function borrow(address cToken, address _cTokenToBorrow, uint256 borrowAmount) external {
+        console.log("---borrow---");
         //Enter the market before supply and borrow
         uint256 _decimals = 18;
         address[] memory cTokens = new address[](1);
@@ -38,7 +58,9 @@ contract CompoundController is ICompound{
             "Sender either not authorized/Some internal factor is invalid"
         );
         require(_shortfall == 0, "Borrowed over limit"); //The account is currently below the collateral requirement
+        console.log("shortfall:", _shortfall, "liqudity:", _liquidity);
         require(_liquidity > 0, "Can't borrow");
+        
         //calculate Max borrow
         uint256 _priceFeed = priceFeed.getUnderlyingPrice(_cTokenToBorrow);
         // liquidity - USD scaled up by 1e18
@@ -77,7 +99,6 @@ contract CompoundController is ICompound{
         returns (uint256)
     {
         console.log(
-            "Borrowed Balance (cLINK):",
             CErc20(_cTokenBorrowed).borrowBalanceCurrent(address(this))
         );
         return CErc20(_cTokenBorrowed).borrowBalanceCurrent(address(this));
@@ -120,9 +141,9 @@ contract CompoundController is ICompound{
     }
 
     //Direct method of getting balance
-    function balanceUnderlying(address cToken) external returns (uint256) {
+    function balanceUnderlying(address cToken) internal returns (uint256) {
         console.log(
-            "Direct Function Balance of cDAI:",
+            "Direct Function Balance of cToken:",
             CErc20(cToken).balanceOfUnderlying(address(this))
         );
         return CErc20(cToken).balanceOfUnderlying(address(this));
@@ -133,13 +154,7 @@ contract CompoundController is ICompound{
         require( CErc20(cToken).redeem(_amountCToken) == 0, "Process failed");
     }
 
-    //Borrow and Repay
-    //Mainnet Comptroller address
-    Comptroller public comptroller =
-        Comptroller(0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B);
-    //chainlink contract mainnet address
-    PriceFeed public priceFeed =
-        PriceFeed(0x922018674c12a7F0D394ebEEf9B58F186CdE13c1);
+
 
     //Collateral
     //It will return the percentage value of how much asset the user can borrow against the cToken they hold(in terms of USDC)
@@ -163,7 +178,7 @@ contract CompoundController is ICompound{
     }
 
     //Get the price in USD with 6 decimal precision
-    function getPriceFeed(address _cToken) external view returns (uint256) {
+    function getPriceFeed(address _cToken) internal view returns (uint256) {
         //scaled by 1e18
         return priceFeed.getUnderlyingPrice(_cToken);
     }

@@ -21,9 +21,10 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
         forking: {
-          url: "https://mainnet.infura.io/v3/9302aa8d88b44d37a7b45271ecaaeb25",
+          // url: "https://mainnet.infura.io/v3/9302aa8d88b44d37a7b45271ecaaeb25",
+          url: "https://eth-mainnet.g.alchemy.com/v2/_6Ek2Lzp4UHqjrPb7cNAdRWZSJxiuEkv",
         },
-     // allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true
     },
     localhost: {
       allowUnlimitedContractSize: true
